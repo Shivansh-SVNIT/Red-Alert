@@ -1,4 +1,6 @@
 import pandas as pd
+import warnings
+warnings.filterwarnings('ignore') # To suppress pandas fragmentation warnings
 
 def engineer_features(df):
     print("Calculating features...")
@@ -17,9 +19,13 @@ def engineer_features(df):
         for ch in channels:
             event_data[f"{ch}_diff"] = event_data[ch].diff()
             
-            # Calculate rolling mean and std (window of 5 time steps as an example)
-            event_data[f"{ch}_rolling_mean"] = event_data[ch].rolling(window=5, min_periods=1).mean()
-            event_data[f"{ch}_rolling_std"] = event_data[ch].rolling(window=5, min_periods=1).std().fillna(0)
+            # Short-term memory (5 steps)
+            event_data[f"{ch}_rolling_mean_5"] = event_data[ch].rolling(window=5, min_periods=1).mean()
+            event_data[f"{ch}_rolling_std_5"] = event_data[ch].rolling(window=5, min_periods=1).std().fillna(0)
+            
+            # Long-term memory (60 steps)
+            event_data[f"{ch}_rolling_mean_60"] = event_data[ch].rolling(window=60, min_periods=1).mean()
+            event_data[f"{ch}_rolling_std_60"] = event_data[ch].rolling(window=60, min_periods=1).std().fillna(0)
             
         processed_events.append(event_data)
         
