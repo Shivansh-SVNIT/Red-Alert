@@ -1,9 +1,10 @@
-
-
 ```markdown
-# 🛰️ Red-Alert: Satellite Telemetry Anomaly Detection
+# 🛰️ Red-Alert: Satellite Telemetry Anomaly Detection & Digital Twin
 
-**Red-Alert** is a production-grade machine learning pipeline and real-time monitoring dashboard designed to detect subsystem failures in multivariate satellite telemetry data (inspired by ESA/ISRO operations). 
+**🏆 SVNIT & SAC-ISRO Space Innovation Hackathon 2026 Submission**  
+**Team:** Red Alert | **Theme:** 3 - Smart Satellite Health Monitoring  
+
+**Red-Alert** is a production-grade machine learning pipeline and real-time monitoring dashboard designed to detect subsystem failures in multivariate satellite telemetry data. 
 
 Unlike standard anomaly detection tasks, satellite telemetry presents unique time-series challenges: extreme class imbalance, the risk of temporal data leakage, and "steady-state" anomalies that trick models into accepting faulty hardware states as normal. This project engineers a robust pipeline to solve these physical data challenges, achieving a **100% event-level detection rate** on strictly future, unseen data, and visualizes it through a live microservice architecture.
 
@@ -42,13 +43,9 @@ By extracting the Random Forest's feature importances, the pipeline revealed a c
 
 ---
 
----
-
 ## 📦 Dataset: ESA Satellite Anomaly Data
-* **Source:** European Space Agency (ESA)
-* **Hosting:** Zenodo
-* **Size:** ~3.5 GB (Raw Telemetry)
-* **Note on Reproducibility:** Due to the massive 3.5 GB size of the raw spacecraft telemetry dataset, the `data/` directory is intentionally excluded from this repository via `.gitignore`. To run this pipeline from scratch, you must download the official ESA Satellite Anomaly Dataset from Zenodo, extract the multievent CSVs, and place them into the `/data` folder before executing the feature engineering script.
+* **Source:** European Space Agency (ESA) Open Telemetry Data
+* **Note on Reproducibility:** Due to the massive size of the raw spacecraft telemetry dataset, the heavy raw `.csv` files inside `data/` are excluded via `.gitignore`. However, a sample `features_test.csv` is included to power the live dashboard demo.
 
 ---
 
@@ -70,54 +67,10 @@ Tested on a highly imbalanced, strictly future dataset of 328,556 telemetry samp
 
 ## ⚙️ Pipeline Architecture & How to Run
 
-The repository is modularized into distinct pipeline stages. Clone the repository and run the scripts in the following order:
-
-### Phase 1: Data Engineering & Model Training
-
-**1. Feature Engineering**
-Processes the raw chronological multievent data, calculating rolling means, standard deviations, and differentials for both short and long windows.
-```bash
-python feature_engineering.py
-
-```
-
-**2. Event-Aware Balancing**
-Applies the undersampling strategy to the feature-engineered training data to achieve a balanced Normal/Anomaly ratio without breaking temporal bounds.
-
-```bash
-python balance_training_data.py
-
-```
-
-**3. Baseline Model Training & Evaluation**
-Trains the Random Forest classifier on the balanced historical data and evaluates sample-level metrics on the untouched future test data.
-
-```bash
-python train_baseline.py
-
-```
-
-**4. Event-Level Evaluation**
-Groups the continuous predictions back into their original events to verify if the alarm would have successfully triggered during each unique subsystem failure.
-
-```bash
-python evaluate_events.py
-
-```
-
-**5. Export Engine**
-Packages the trained Random Forest model, the standard scaler, and feature metadata into `.pkl` files inside the `/models` directory for live inference.
-
-```bash
-python export_model.py
-
-```
-
-### Phase 2: Live Inference & Dashboard (Microservice)
+### Phase 1: Live Inference & Dashboard (Running the Prototype)
 
 **1. Start the Ground Station API (Backend)**
 Spins up a FastAPI server that loads the exported ML models and exposes a `/next-frame` endpoint to stream real-time predictions.
-
 ```bash
 python app.py
 
@@ -126,7 +79,7 @@ python app.py
 *API Documentation available at `http://localhost:8000/docs*`
 
 **2. Launch the Control Room Dashboard (Frontend)**
-Open a new terminal, navigate to the dashboard directory, and start the Next.js application. This fetches data from the FastAPI backend and visualizes the telemetry matrix-style in real-time.
+Open a new terminal, navigate to the dashboard directory, and start the Next.js application.
 
 ```bash
 cd red-alert-dashboard
@@ -137,28 +90,32 @@ npm run dev
 
 *Dashboard available at `http://localhost:3000*`
 
+### Phase 2: Data Engineering & Model Training (Optional/Reproducibility)
+
+1. **`feature_engineering.py`**: Calculates rolling means, standard deviations, and differentials for both short and long windows.
+2. **`balance_training_data.py`**: Applies the undersampling strategy to achieve a balanced Normal/Anomaly ratio without breaking temporal bounds.
+3. **`train_baseline.py`**: Trains the Random Forest classifier on historical data.
+4. **`evaluate_events.py`**: Groups continuous predictions back into original events to verify subsystem failure detection.
+5. **`export_model.py`**: Packages the trained models into the `/models` directory for live inference.
+
 ---
 
 ## 📁 Repository Structure
 
 ```text
 📦 Red-Alert
- ┣ 📂 data/                    # Raw & processed CSV datasets (Ignored in Git)
- ┣ 📂 models/                  # Exported .pkl ML models (Ignored in Git)
- ┣ 📂 red-alert-dashboard/     # Next.js Frontend UI
- ┃ ┣ 📂 src/app/
+ ┣ 📂 data/                    # Sample telemetry datasets for live stream
+ ┣ 📂 models/                  # Exported .pkl ML models (Included for API)
+ ┣ 📂 red-alert-dashboard/     # Next.js Digital Twin Frontend
+ ┃ ┣ 📂 app/
  ┃ ┃ ┗ 📜 page.tsx             # Main Control Room Dashboard Code
  ┣ 📜 feature_engineering.py   # Sliding window calculations
  ┣ 📜 balance_training_data.py # Undersampling logic
  ┣ 📜 train_baseline.py        # Model training
- ┣ 📜 evaluate_events.py       # 23/23 evaluation logic
+ ┣ 📜 evaluate_events.py       # Event-level evaluation logic
  ┣ 📜 export_model.py          # Model packaging
- ┣ 📜 app.py                   # FastAPI Server
- ┣ 📜 README.md                # Project documentation
- ┗ 📜 .gitignore
-
-```
-
-```
+ ┣ 📜 app.py                   # FastAPI Live Telemetry Server
+ ┣ 📜 requirements.txt         # Python dependencies
+ ┗ 📜 README.md                # Project documentation
 
 ```
