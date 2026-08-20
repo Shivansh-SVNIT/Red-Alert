@@ -1,0 +1,59 @@
+import pandas as pd
+import joblib
+import time
+import warnings
+import sys
+
+# Suppress the annoying sklearn feature name warning!
+warnings.filterwarnings("ignore", category=UserWarning)
+
+# Load the saved model assets
+print("Loading Red-Alert Engine...")
+clf = joblib.load("models/rf_model.pkl")
+scaler = joblib.load("models/scaler.pkl")
+feature_cols = joblib.load("models/feature_cols.pkl")
+
+# Load the test features (simulating incoming data stream)
+test_data = pd.read_csv("data/features_test.csv")
+
+# Let's monitor a specific event that contains a failure
+EVENT_TO_MONITOR = "id_154"
+stream_data = test_data[test_data["event_id"] == EVENT_TO_MONITOR].reset_index(drop=True)
+total_rows = len(stream_data)
+
+print(f"\n📡 ESTABLISHING CONNECTION TO SATELLITE TELEMETRY...")
+print(f"▶️ STARTING LIVE STREAM FOR EVENT: {EVENT_TO_MONITOR} (Total frames: {total_rows})\n")
+print("💡 Tip: Press Ctrl + C to stop the stream at any time.\n")
+time.sleep(2)
+
+print(f"{'FRAME':<12} | {'TIMESTAMP':<25} | {'CH_41_VAL':<10} | {'PREDICTION STATUS'}")
+print("-" * 75)
+
+# Simulate live stream row by row inside a try-except block to handle manual exits smoothly
+try:
+    for index, row in stream_data.iterrows():
+        # Format as DataFrame to keep Sklearn perfectly happy without warnings
+        X_live = pd.DataFrame([row[feature_cols]], columns=feature_cols)
+        X_live_scaled = scaler.transform(X_live)
+        
+        # Predict
+        prediction = clf.predict(X_live_scaled)[0]
+        
+        timestamp = str(row["datetime"])
+        ch41_val = round(row["channel_41"], 4)
+        
+        # Terminal UI formatting
+        if prediction == 1:
+            # RED alert for anomaly
+            status = "\033[91m🚨 RED ALERT: ANOMALY DETECTED!\033[0m"
+        else:
+            # GREEN for normal
+            status = "\033[92m✅ SYSTEM NORMAL\033[0m"
+            
+        print(f"[{index+1}/{total_rows}] | {timestamp:<25} | {ch41_val:<10} | {status}")
+        
+        # Sleep to simulate the delay of incoming live data
+        time.sleep(0.05) 
+        
+except KeyboardInterrupt:
+    print("\n🛑 Live stream manually stopped by user.")
