@@ -42,6 +42,16 @@ By extracting the Random Forest's feature importances, the pipeline revealed a c
 
 ---
 
+---
+
+## 📦 Dataset: ESA Satellite Anomaly Data
+* **Source:** European Space Agency (ESA)
+* **Hosting:** Zenodo
+* **Size:** ~3.5 GB (Raw Telemetry)
+* **Note on Reproducibility:** Due to the massive 3.5 GB size of the raw spacecraft telemetry dataset, the `data/` directory is intentionally excluded from this repository via `.gitignore`. To run this pipeline from scratch, you must download the official ESA Satellite Anomaly Dataset from Zenodo, extract the multievent CSVs, and place them into the `/data` folder before executing the feature engineering script.
+
+---
+
 ## 🚀 Final Evaluation Results
 
 Tested on a highly imbalanced, strictly future dataset of 328,556 telemetry samples across 23 isolated failure events.
