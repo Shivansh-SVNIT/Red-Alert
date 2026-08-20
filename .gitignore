@@ -1,8 +1,18 @@
+# Virtual Environment
 .venv/
+venv/
+env/
+
+# Python Cache
 __pycache__/
 *.pyc
+
+# Local Configs
 .env
 .vscode/
 
-# Raw datasets
+# Datasets (Never push raw or processed CSVs)
 data/
+
+# Machine Learning Models (Never push heavy .pkl files)
+models/
