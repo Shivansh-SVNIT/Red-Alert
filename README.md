@@ -10,6 +10,15 @@ Unlike standard anomaly detection tasks, satellite telemetry presents unique tim
 
 ---
 
+## 📎 Hackathon Submission Deliverables
+
+*   **Executive Summary (PDF):** [View Document](https://drive.google.com/file/d/1Jcat07HEHMyLIvVYmnwFT9wOcbuO5vvb/view?usp=sharing)
+*   **Technical Report (PDF):** [View Document](https://drive.google.com/file/d/1oDsflzK38ow0JPMBfNP28ahlqSjQlgD6/view?usp=sharing)
+*   **Working Prototype Video Demo:** [Watch Demo](https://drive.google.com/file/d/1aJlWDPMhaiVBeDdsoxNYgT4q2-x4aauZ/view?usp=sharing)
+*   **GitHub Source Code:** [Repository Link](https://github.com/Shivansh-SVNIT/Red-Alert)
+
+---
+
 ## 🛠️ Tech Stack
 * **Machine Learning & Data Engineering:** Python, Pandas, Scikit-Learn, Joblib
 * **Backend API (Microservice):** FastAPI, Uvicorn
